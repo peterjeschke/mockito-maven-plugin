@@ -33,8 +33,10 @@ import static org.mockito.Mockito.when;
 class PrepareAgentMojoTest {
     @TempDir
     private Path tmpDir;
+
     @Mock
     private MavenProject project;
+
     private Properties properties;
     private PrepareAgentMojo mojo;
 
@@ -78,7 +80,8 @@ class PrepareAgentMojoTest {
     void execute_autoDetectTycho() throws MojoFailureException, IOException {
         final Path artifactFile = createTempFile(tmpDir, null, ".jar");
         when(project.getArtifacts()).thenReturn(singleton(buildArtifact("org.mockito", "mockito-core", artifactFile)));
-        when(project.getBuildPlugins()).thenReturn(singletonList(buildPlugin("org.eclipse.tycho", "tycho-surefire-plugin")));
+        when(project.getBuildPlugins())
+                .thenReturn(singletonList(buildPlugin("org.eclipse.tycho", "tycho-surefire-plugin")));
 
         mojo.execute();
 
@@ -92,7 +95,9 @@ class PrepareAgentMojoTest {
     void execute_manualPropertyNameOverridesTycho() throws MojoFailureException, IOException {
         final Path artifactFile = createTempFile(tmpDir, null, ".jar");
         when(project.getArtifacts()).thenReturn(singleton(buildArtifact("org.mockito", "mockito-core", artifactFile)));
-        lenient().when(project.getBuildPlugins()).thenReturn(singletonList(buildPlugin("org.eclipse.tycho", "tycho-surefire-plugin")));
+        lenient()
+                .when(project.getBuildPlugins())
+                .thenReturn(singletonList(buildPlugin("org.eclipse.tycho", "tycho-surefire-plugin")));
         mojo.setPropertyName("customArg");
 
         mojo.execute();
@@ -120,8 +125,7 @@ class PrepareAgentMojoTest {
 
     @Test
     void execute_nullVerfication_project() {
-        assertThatThrownBy(() -> new PrepareAgentMojo(null))
-                .isNotNull();
+        assertThatThrownBy(() -> new PrepareAgentMojo(null)).isNotNull();
     }
 
     @Test

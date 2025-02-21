@@ -28,10 +28,10 @@ import static org.apache.maven.plugins.annotations.ResolutionScope.TEST;
  * If the dependency is not available, the build will fail. This behavior can be changed by setting failSilent.
  * <p>
  * Supports the following test plugins:
- * <p>
  * <ul>
  * <li> maven-surefire-plugin (default)
  * <li> tycho-surefire-plugin
+ * </ul>
  */
 @Execute(phase = INITIALIZE, goal = "prepareAgent")
 @Mojo(name = "prepareAgent", requiresDependencyResolution = TEST, defaultPhase = INITIALIZE, threadSafe = true)
@@ -110,8 +110,7 @@ public class PrepareAgentMojo extends AbstractMojo {
     }
 
     private boolean isAgentArtifact(final Artifact artifact) {
-        return agentGroupId.equals(artifact.getGroupId())
-                && agentArtifactId.equals(artifact.getArtifactId());
+        return agentGroupId.equals(artifact.getGroupId()) && agentArtifactId.equals(artifact.getArtifactId());
     }
 
     /**
