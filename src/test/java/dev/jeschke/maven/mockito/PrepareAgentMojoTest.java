@@ -1,5 +1,17 @@
 package dev.jeschke.maven.mockito;
 
+import static java.nio.file.Files.createTempFile;
+import static java.util.Collections.*;
+import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.InstanceOfAssertFactories.STRING;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Properties;
+import java.util.stream.Stream;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
@@ -15,19 +27,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Properties;
-import java.util.stream.Stream;
-
-import static java.nio.file.Files.createTempFile;
-import static java.util.Collections.*;
-import static org.assertj.core.api.Assertions.*;
-import static org.assertj.core.api.InstanceOfAssertFactories.STRING;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PrepareAgentMojoTest {

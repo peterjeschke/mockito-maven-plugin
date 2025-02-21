@@ -1,5 +1,16 @@
 package dev.jeschke.maven.mockito;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+import static java.util.Objects.requireNonNull;
+import static org.apache.maven.plugins.annotations.LifecyclePhase.INITIALIZE;
+import static org.apache.maven.plugins.annotations.ResolutionScope.TEST;
+
+import java.io.File;
+import java.util.Optional;
+import java.util.Properties;
+import javax.inject.Inject;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.AbstractMojo;
@@ -8,18 +19,6 @@ import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-
-import javax.inject.Inject;
-import java.io.File;
-import java.util.Optional;
-import java.util.Properties;
-
-import static com.google.common.base.Strings.isNullOrEmpty;
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
-import static java.util.Objects.requireNonNull;
-import static org.apache.maven.plugins.annotations.LifecyclePhase.INITIALIZE;
-import static org.apache.maven.plugins.annotations.ResolutionScope.TEST;
 
 /**
  * Prepares the Mockito agent by adding it to the command line of test plugins.
