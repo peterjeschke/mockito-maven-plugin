@@ -73,6 +73,8 @@ Add this to your plugins:
 The plugin will update the arguments that the test plugin will use to start the JVM.
 Supported test plugins are Maven Surefire and Tycho Surefire.
 
+You can check out this projects pom for an example.
+
 ## Configuration
 
 | Property        | Description                                                                                                                                                                                      | Type    | Default                                                                                                  |
