@@ -137,6 +137,13 @@
                 <groupId>dev.jeschke.maven.mockito</groupId>
                 <artifactId>mockito-maven-plugin</artifactId>
                 <version>${last-released-version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepareAgent</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
