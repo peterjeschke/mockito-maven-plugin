@@ -24,7 +24,7 @@ jobs:
       - name: Build with Maven
         run: mvn -B package
       - name: Deploy
-        run: mvn -P release deploy
+        run: mvn -B -P release deploy
         env:
           MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           MAVEN_CENTRAL_TOKEN: ${{ secrets.NEXUS_PASSWORD }}
