@@ -1,6 +1,5 @@
 package dev.jeschke.maven.mockito;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.util.Objects.requireNonNull;
@@ -11,7 +10,6 @@ import java.io.File;
 import java.util.Optional;
 import java.util.Properties;
 import javax.inject.Inject;
-
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.AbstractMojo;
@@ -111,6 +109,10 @@ public class PrepareAgentMojo extends AbstractMojo {
 
     private boolean isAgentArtifact(final Artifact artifact) {
         return agentGroupId.equals(artifact.getGroupId()) && agentArtifactId.equals(artifact.getArtifactId());
+    }
+
+    private boolean isNullOrEmpty(final String string) {
+        return string == null || string.isEmpty();
     }
 
     /**
