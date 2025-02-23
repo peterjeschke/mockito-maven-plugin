@@ -31,7 +31,7 @@
 
     <scm>
         <connection>scm:git:https://github.com/peterjeschke/mockito-maven-plugin.git</connection>
-        <developerConnection>scm:git:git://git@github.com:peterjeschke/mockito-maven-plugin.git</developerConnection>
+        <developerConnection>scm:git:ssh://git@github.com/peterjeschke/mockito-maven-plugin.git</developerConnection>
         <url>https://github.com/peterjeschke/mockito-maven-plugin</url>
     </scm>
 
