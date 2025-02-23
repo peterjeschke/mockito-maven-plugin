@@ -11,6 +11,7 @@ import java.io.File;
 import java.util.Optional;
 import java.util.Properties;
 import javax.inject.Inject;
+
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.AbstractMojo;
@@ -142,7 +143,7 @@ public class PrepareAgentMojo extends AbstractMojo {
     /**
      * Whether to skip this goal. If set to false, the goal will run even if tests are disabled.
      */
-    @Parameter(name = "skip", property = "mockito.skipPrepare")
+    @Parameter(name = "skipPrepare", property = "mockito.skipPrepare", defaultValue = "false")
     public void setSkipPrepare(final Boolean skipPrepare) {
         this.skipPrepare = skipPrepare;
     }
