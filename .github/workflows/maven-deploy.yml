@@ -1,4 +1,4 @@
-name: Maven push SNAPSHOT
+name: Maven deploy
 
 on:
   push:
@@ -24,7 +24,7 @@ jobs:
       - name: Build with Maven
         run: mvn -B --no-transfer-progress package
       - name: Deploy
-        run: mvn -B --no-transfer-progress -P release deploy
+        run: mvn -B --no-transfer-progress -P deploy deploy
         env:
           MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           MAVEN_CENTRAL_TOKEN: ${{ secrets.NEXUS_PASSWORD }}
