@@ -53,7 +53,7 @@
         <publishing-plugin.version>0.7.0</publishing-plugin.version>
         <mockito.version>5.16.1</mockito.version>
         <sisu-plugin.version>0.3.5</sisu-plugin.version>
-        <spotless.version>2.44.3</spotless.version>
+        <spotless.version>2.44.4</spotless.version>
     </properties>
 
     <dependencyManagement>
