@@ -42,8 +42,8 @@ public class PrepareAgentMojo extends AbstractMojo {
 
     private final MavenProject project;
     private String propertyName = null;
-    private String agentGroupId = "org.mockito";
-    private String agentArtifactId = "mockito-core";
+    private String agentGroupId = "net.bytebuddy";
+    private String agentArtifactId = "byte-buddy-agent";
     private Boolean skipPrepare = null;
     private boolean skipTests = false;
     private boolean failSilent = false;
@@ -129,7 +129,7 @@ public class PrepareAgentMojo extends AbstractMojo {
     /**
      * The groupId of the dependency that contains the agent.
      */
-    @Parameter(name = "agentGroupId", property = "mockito.agentGroupId", defaultValue = "org.mockito")
+    @Parameter(name = "agentGroupId", property = "mockito.agentGroupId", defaultValue = "net.bytebuddy")
     public void setAgentGroupId(final String agentGroupId) {
         this.agentGroupId = agentGroupId;
     }
@@ -137,7 +137,7 @@ public class PrepareAgentMojo extends AbstractMojo {
     /**
      * The artifactId of the dependency that contains the agent.
      */
-    @Parameter(name = "agentArtifactId", property = "mockito.agentArtifactId", defaultValue = "mockito-core")
+    @Parameter(name = "agentArtifactId", property = "mockito.agentArtifactId", defaultValue = "byte-buddy-agent")
     public void setAgentArtifactId(final String agentArtifactId) {
         this.agentArtifactId = agentArtifactId;
     }
