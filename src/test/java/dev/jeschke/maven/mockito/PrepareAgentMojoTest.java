@@ -51,7 +51,7 @@ class PrepareAgentMojoTest {
     @Test
     void execute_defaultValues() throws MojoFailureException, IOException {
         final Path artifactFile = createTempFile(tmpDir, null, ".jar");
-        when(project.getArtifacts()).thenReturn(singleton(buildArtifact("org.mockito", "mockito-core", artifactFile)));
+        when(project.getArtifacts()).thenReturn(singleton(buildArtifact("net.bytebuddy", "byte-buddy-agent", artifactFile)));
 
         mojo.execute();
 
@@ -79,7 +79,7 @@ class PrepareAgentMojoTest {
     @Test
     void execute_autoDetectTycho() throws MojoFailureException, IOException {
         final Path artifactFile = createTempFile(tmpDir, null, ".jar");
-        when(project.getArtifacts()).thenReturn(singleton(buildArtifact("org.mockito", "mockito-core", artifactFile)));
+        when(project.getArtifacts()).thenReturn(singleton(buildArtifact("net.bytebuddy", "byte-buddy-agent", artifactFile)));
         when(project.getBuildPlugins())
                 .thenReturn(singletonList(buildPlugin("org.eclipse.tycho", "tycho-surefire-plugin")));
 
@@ -94,7 +94,7 @@ class PrepareAgentMojoTest {
     @Test
     void execute_manualPropertyNameOverridesTycho() throws MojoFailureException, IOException {
         final Path artifactFile = createTempFile(tmpDir, null, ".jar");
-        when(project.getArtifacts()).thenReturn(singleton(buildArtifact("org.mockito", "mockito-core", artifactFile)));
+        when(project.getArtifacts()).thenReturn(singleton(buildArtifact("net.bytebuddy", "byte-buddy-agent", artifactFile)));
         lenient()
                 .when(project.getBuildPlugins())
                 .thenReturn(singletonList(buildPlugin("org.eclipse.tycho", "tycho-surefire-plugin")));
@@ -150,7 +150,7 @@ class PrepareAgentMojoTest {
         final Path artifactFile = createTempFile(tmpDir, null, ".jar");
         lenient()
                 .when(project.getArtifacts())
-                .thenReturn(singleton(buildArtifact("org.mockito", "mockito-core", artifactFile)));
+                .thenReturn(singleton(buildArtifact("net.bytebuddy", "byte-buddy-agent", artifactFile)));
 
         mojo.execute();
 
