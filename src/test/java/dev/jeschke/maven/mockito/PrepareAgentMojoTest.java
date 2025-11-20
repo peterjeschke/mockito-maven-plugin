@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Properties;
 import java.util.stream.Stream;
+import java.util.HashSet;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
@@ -56,7 +57,7 @@ class PrepareAgentMojoTest {
 
         assertThat(properties)
                 .extractingByKey("argLine", STRING)
-                .isEqualToIgnoringWhitespace("-javaagent:" + artifactFile.toAbsolutePath());
+                .isEqualToIgnoringWhitespace("-javaagent:\"" + artifactFile.toAbsolutePath() + "\"");
     }
 
     @Test
@@ -72,7 +73,7 @@ class PrepareAgentMojoTest {
         assertThat(properties)
                 .doesNotContainKey("argLine")
                 .extractingByKey("customArg", STRING)
-                .isEqualToIgnoringWhitespace("-javaagent:" + artifactFile.toAbsolutePath());
+                .isEqualToIgnoringWhitespace("-javaagent:\"" + artifactFile.toAbsolutePath() + "\"");
     }
 
     @Test
@@ -87,7 +88,7 @@ class PrepareAgentMojoTest {
         assertThat(properties)
                 .doesNotContainKey("argLine")
                 .extractingByKey("tycho.testArgLine", STRING)
-                .isEqualToIgnoringWhitespace("-javaagent:" + artifactFile.toAbsolutePath());
+                .isEqualToIgnoringWhitespace("-javaagent:\"" + artifactFile.toAbsolutePath() + "\"");
     }
 
     @Test
@@ -104,7 +105,7 @@ class PrepareAgentMojoTest {
         assertThat(properties)
                 .doesNotContainKey("argLine")
                 .extractingByKey("customArg", STRING)
-                .isEqualToIgnoringWhitespace("-javaagent:" + artifactFile.toAbsolutePath());
+                .isEqualToIgnoringWhitespace("-javaagent:\"" + artifactFile.toAbsolutePath() + "\"");
     }
 
     @Test
@@ -160,6 +161,45 @@ class PrepareAgentMojoTest {
         }
     }
 
+    @Test
+    void execute_versionLessThanThreshold_usesByteBuddyAgent() throws MojoFailureException, IOException {
+        final Path mockitoFile = createTempFile(tmpDir, null, ".jar");
+        final Path byteBuddyFile = createTempFile(tmpDir, null, ".jar");
+
+        final Artifact mockito = buildArtifact("org.mockito", "mockito-core", mockitoFile, "5.13.0");
+        final Artifact byteBuddy = buildArtifact("net.bytebuddy", "byte-buddy-agent", byteBuddyFile);
+        when(project.getArtifacts()).thenReturn(new HashSet<>(java.util.Arrays.asList(mockito, byteBuddy)));
+
+        mojo.execute();
+
+        assertThat(properties)
+                .extractingByKey("argLine", STRING)
+                .isEqualToIgnoringWhitespace("-javaagent:\"" + byteBuddyFile.toAbsolutePath() + "\"");
+    }
+
+    @Test
+    void execute_versionGreaterOrEqualThreshold_usesMockitoAgent() throws MojoFailureException, IOException {
+        final Path mockitoFile = createTempFile(tmpDir, null, ".jar");
+        final Artifact mockito = buildArtifact("org.mockito", "mockito-core", mockitoFile, "5.15.0");
+        when(project.getArtifacts()).thenReturn(singleton(mockito));
+
+        mojo.execute();
+
+        assertThat(properties)
+                .extractingByKey("argLine", STRING)
+                .isEqualToIgnoringWhitespace("-javaagent:\"" + mockitoFile.toAbsolutePath() + "\"");
+    }
+
+    @Test
+    void execute_versionCheckFailsWhenMockitoMissingAndNonSilent() throws IOException {
+        final Path agentFile = createTempFile(tmpDir, null, ".jar");
+        final Artifact agent = buildArtifact("net.bytebuddy", "byte-buddy-agent", agentFile);
+        when(project.getArtifacts()).thenReturn(singleton(agent));
+        mojo.setFailSilent(false);
+
+        assertThatThrownBy(mojo::execute).isInstanceOf(MojoFailureException.class);
+    }
+
     static Stream<Arguments> skipFlags() {
         return Stream.of(
                 arguments(false, false, false),
@@ -171,8 +211,12 @@ class PrepareAgentMojoTest {
     }
 
     private Artifact buildArtifact(final String groupId, final String artifactId, final Path artifactFile) {
+        return buildArtifact(groupId, artifactId, artifactFile, "5.15.0");
+    }
+
+    private Artifact buildArtifact(final String groupId, final String artifactId, final Path artifactFile, final String version) {
         final DefaultArtifact artifact =
-                new DefaultArtifact(groupId, artifactId, "1.0.0", "test", "jar", "jar", new DefaultArtifactHandler());
+                new DefaultArtifact(groupId, artifactId, version, "test", "jar", "jar", new DefaultArtifactHandler());
         artifact.setFile(artifactFile.toFile());
         return artifact;
     }
