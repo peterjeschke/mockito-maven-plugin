@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.Properties;
 import javax.inject.Inject;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoFailureException;
@@ -35,15 +36,20 @@ import org.apache.maven.project.MavenProject;
 @Mojo(name = "prepareAgent", requiresDependencyResolution = TEST, defaultPhase = INITIALIZE, threadSafe = true)
 public class PrepareAgentMojo extends AbstractMojo {
 
+    private static final String DEFAULT_GROUP_ID = "org.mockito";
+    private static final String DEFAULT_ARTIFACT_ID = "mockito-core";
+    private static final String BYTE_BUDDY_GROUP_ID = "net.bytebuddy";
+    private static final String BYTE_BUDDY_ARTIFACT_ID = "byte-buddy-agent";
     private static final String TYCHO_SUREFIRE_GROUP_ID = "org.eclipse.tycho";
     private static final String TYCHO_SUREFIRE_ARTIFACT_ID = "tycho-surefire-plugin";
     private static final String TYCHO_ARGLINE_PROPERTY = "tycho.testArgLine";
     private static final String SUREFIRE_ARGLINE_PROPERTY = "argLine";
+    private static final ComparableVersion MOCKITO_VERSION_THRESHOLD = new ComparableVersion("5.14.0");
 
     private final MavenProject project;
     private String propertyName = null;
-    private String agentGroupId = "org.mockito";
-    private String agentArtifactId = "mockito-core";
+    private String agentGroupId = DEFAULT_GROUP_ID;
+    private String agentArtifactId = DEFAULT_ARTIFACT_ID;
     private Boolean skipPrepare = null;
     private boolean skipTests = false;
     private boolean failSilent = false;
@@ -69,6 +75,9 @@ public class PrepareAgentMojo extends AbstractMojo {
         final String actualPropertyName = getPropertyName();
         final Properties properties = project.getProperties();
         final String existingArgLine = properties.getProperty(actualPropertyName, "");
+        if (isDefaultArtifactSet()) {
+            ensureMockitoVersionCompatibility();
+        }
         final Optional<String> artifactPath = buildArtifactPath();
         if (!artifactPath.isPresent()) {
             final String artifact = String.format("%s:%s", agentGroupId, agentArtifactId);
@@ -78,7 +87,7 @@ public class PrepareAgentMojo extends AbstractMojo {
             }
             throw new MojoFailureException(String.format("Could not resolve artifact %s", artifact));
         }
-        final String mockitoArguments = "-javaagent:" + artifactPath.get();
+        final String mockitoArguments = "-javaagent:\"" + artifactPath.get() + "\"";
         final String newArgline = mockitoArguments + " " + existingArgLine;
         properties.setProperty(actualPropertyName, newArgline);
         getLog().info(String.format("%s set to %s", actualPropertyName, newArgline));
@@ -107,12 +116,45 @@ public class PrepareAgentMojo extends AbstractMojo {
                 && TYCHO_SUREFIRE_ARTIFACT_ID.equals(plugin.getArtifactId());
     }
 
+    private boolean isDefaultArtifactSet() {
+        return DEFAULT_GROUP_ID.equals(agentGroupId) && DEFAULT_ARTIFACT_ID.equals(agentArtifactId);
+    }
+
     private boolean isAgentArtifact(final Artifact artifact) {
         return agentGroupId.equals(artifact.getGroupId()) && agentArtifactId.equals(artifact.getArtifactId());
     }
 
     private boolean isNullOrEmpty(final String string) {
         return string == null || string.isEmpty();
+    }
+
+    private void ensureMockitoVersionCompatibility() throws MojoFailureException
+    {
+        final Optional<Artifact> mockito = project.getArtifacts().stream()
+            .filter(a -> DEFAULT_GROUP_ID.equals(a.getGroupId()) && DEFAULT_ARTIFACT_ID.equals(a.getArtifactId()))
+            .findFirst();
+
+        if (!mockito.isPresent() && failSilent)
+        {
+            getLog().info("Could not find mockito-core dependency, skipping version check");
+            return;
+        }
+        else if (!mockito.isPresent())
+        {
+            throw new MojoFailureException("Mockito-core dependency not found when checking version");
+        }
+
+        final String version = mockito.get().getVersion();
+        if (version == null)
+        {
+            throw new MojoFailureException("Unable to get version from mockito-core dependency");
+        }
+
+        if (new ComparableVersion(version).compareTo(MOCKITO_VERSION_THRESHOLD) < 0)
+        {
+            setAgentGroupId(BYTE_BUDDY_GROUP_ID);
+            setAgentArtifactId(BYTE_BUDDY_ARTIFACT_ID);
+        }
     }
 
     /**
@@ -129,7 +171,7 @@ public class PrepareAgentMojo extends AbstractMojo {
     /**
      * The groupId of the dependency that contains the agent.
      */
-    @Parameter(name = "agentGroupId", property = "mockito.agentGroupId", defaultValue = "org.mockito")
+    @Parameter(name = "agentGroupId", property = "mockito.agentGroupId", defaultValue = DEFAULT_GROUP_ID)
     public void setAgentGroupId(final String agentGroupId) {
         this.agentGroupId = agentGroupId;
     }
@@ -137,7 +179,7 @@ public class PrepareAgentMojo extends AbstractMojo {
     /**
      * The artifactId of the dependency that contains the agent.
      */
-    @Parameter(name = "agentArtifactId", property = "mockito.agentArtifactId", defaultValue = "mockito-core")
+    @Parameter(name = "agentArtifactId", property = "mockito.agentArtifactId", defaultValue = DEFAULT_ARTIFACT_ID)
     public void setAgentArtifactId(final String agentArtifactId) {
         this.agentArtifactId = agentArtifactId;
     }
