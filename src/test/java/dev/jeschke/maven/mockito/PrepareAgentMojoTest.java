@@ -10,9 +10,9 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.Properties;
 import java.util.stream.Stream;
-import java.util.HashSet;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
@@ -51,7 +51,7 @@ class PrepareAgentMojoTest {
     @Test
     void execute_defaultValues() throws MojoFailureException, IOException {
         final Path artifactFile = createTempFile(tmpDir, null, ".jar");
-        when(project.getArtifacts()).thenReturn(singleton(buildArtifact("net.bytebuddy", "byte-buddy-agent", artifactFile)));
+        when(project.getArtifacts()).thenReturn(singleton(buildArtifact("org.mockito", "mockito-core", artifactFile)));
 
         mojo.execute();
 
@@ -79,7 +79,7 @@ class PrepareAgentMojoTest {
     @Test
     void execute_autoDetectTycho() throws MojoFailureException, IOException {
         final Path artifactFile = createTempFile(tmpDir, null, ".jar");
-        when(project.getArtifacts()).thenReturn(singleton(buildArtifact("net.bytebuddy", "byte-buddy-agent", artifactFile)));
+        when(project.getArtifacts()).thenReturn(singleton(buildArtifact("org.mockito", "mockito-core", artifactFile)));
         when(project.getBuildPlugins())
                 .thenReturn(singletonList(buildPlugin("org.eclipse.tycho", "tycho-surefire-plugin")));
 
@@ -94,7 +94,7 @@ class PrepareAgentMojoTest {
     @Test
     void execute_manualPropertyNameOverridesTycho() throws MojoFailureException, IOException {
         final Path artifactFile = createTempFile(tmpDir, null, ".jar");
-        when(project.getArtifacts()).thenReturn(singleton(buildArtifact("net.bytebuddy", "byte-buddy-agent", artifactFile)));
+        when(project.getArtifacts()).thenReturn(singleton(buildArtifact("org.mockito", "mockito-core", artifactFile)));
         lenient()
                 .when(project.getBuildPlugins())
                 .thenReturn(singletonList(buildPlugin("org.eclipse.tycho", "tycho-surefire-plugin")));
@@ -150,7 +150,7 @@ class PrepareAgentMojoTest {
         final Path artifactFile = createTempFile(tmpDir, null, ".jar");
         lenient()
                 .when(project.getArtifacts())
-                .thenReturn(singleton(buildArtifact("net.bytebuddy", "byte-buddy-agent", artifactFile)));
+                .thenReturn(singleton(buildArtifact("org.mockito", "mockito-core", artifactFile)));
 
         mojo.execute();
 
@@ -214,7 +214,8 @@ class PrepareAgentMojoTest {
         return buildArtifact(groupId, artifactId, artifactFile, "5.15.0");
     }
 
-    private Artifact buildArtifact(final String groupId, final String artifactId, final Path artifactFile, final String version) {
+    private Artifact buildArtifact(
+            final String groupId, final String artifactId, final Path artifactFile, final String version) {
         final DefaultArtifact artifact =
                 new DefaultArtifact(groupId, artifactId, version, "test", "jar", "jar", new DefaultArtifactHandler());
         artifact.setFile(artifactFile.toFile());
