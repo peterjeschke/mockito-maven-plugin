@@ -42,7 +42,7 @@
 
         <last-released-version>1.0.0</last-released-version>
 
-        <assertj.version>3.27.3</assertj.version>
+        <assertj.version>3.27.7</assertj.version>
         <junit-jupiter.version>6.0.2</junit-jupiter.version>
         <maven.version>3.9.12</maven.version>
         <maven-gpg-plugin.version>3.2.7</maven-gpg-plugin.version>
