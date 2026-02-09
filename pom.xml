@@ -52,7 +52,7 @@
         <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
         <publishing-plugin.version>0.10.0</publishing-plugin.version>
         <mockito.version>5.21.0</mockito.version>
-        <sisu-plugin.version>0.3.5</sisu-plugin.version>
+        <sisu-plugin.version>1.0.0</sisu-plugin.version>
         <spotless.version>3.2.0</spotless.version>
     </properties>
 
